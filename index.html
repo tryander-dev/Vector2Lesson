@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Vector2Lesson - Unity Game</title>
+    <title>Vector2 Playground - Unity Game</title>
     <style>
         * {
             margin: 0;
@@ -12,36 +12,61 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More standard font stack */
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c); /* Attractive gradient */
             padding: 16px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #333;
-            overflow-y: auto; /* Позволяет скроллиться если контент больше высоты экрана */
+            color: #fff; /* Text color for dark background */
+            overflow-y: auto;
+            /* Add subtle animation */
+            animation: bgAnimation 15s infinite alternate;
+        }
+
+        @keyframes bgAnimation {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
         .container {
-            max-width: 960px;
+            max-width: 1000px; /* Slightly wider */
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 20px; /* Increased gap */
+            padding: 10px; /* Add internal padding */
+            background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background for content */
+            border-radius: 15px; /* Rounded corners */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Stronger shadow */
         }
 
         header {
             width: 100%;
             text-align: center;
-            padding: 8px 0;
+            padding: 15px 0;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1); /* Subtle divider */
         }
 
         h1 {
-            font-weight: 400;
-            font-size: 1.8rem;
+            font-weight: 600; /* Bolder font */
+            font-size: 2.2rem; /* Larger size */
             letter-spacing: -0.02em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for depth */
+            background: linear-gradient(to right, #ff8a00, #da1b60); /* Gradient text */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+             text-align: center;
+             font-size: 1.1rem;
+             color: #ccc;
+             margin-top: -10px;
+             margin-bottom: 10px;
         }
 
         #unity-container {
@@ -49,9 +74,10 @@
             position: relative;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); /* Deeper shadow */
             background-color: #000;
             aspect-ratio: 960 / 600;
+            border: 2px solid rgba(255, 255, 255, 0.1); /* Subtle border */
         }
 
         #unity-canvas {
@@ -65,23 +91,24 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 60%;
-            max-width: 300px;
+            width: 70%; /* Wider bar */
+            max-width: 400px; /* Max width */
         }
 
         #unity-progress-bar-empty {
             width: 100%;
-            height: 4px;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
+            height: 8px; /* Thicker bar */
+            background-color: rgba(255, 255, 255, 0.2); /* Lighter empty color */
+            border-radius: 4px; /* Rounder corners */
             overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Shadow */
         }
 
         #unity-progress-bar-full {
             height: 100%;
             width: 0%;
-            background-color: #ffffff;
-            transition: width 0.2s ease;
+            background: linear-gradient(to right, #00c6ff, #0072ff); /* Gradient fill */
+            transition: width 0.4s ease; /* Smoother transition */
         }
 
         .controls-container {
@@ -89,123 +116,162 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            padding: 10px 0;
+            padding: 12px 15px; /* More padding */
+            background-color: rgba(0, 0, 0, 0.3); /* Background for controls */
+            border-radius: 8px;
         }
 
         #unity-fullscreen-button {
-            width: 40px;
-            height: 40px;
+            width: 45px; /* Slightly bigger */
+            height: 45px;
             border-radius: 50%;
-            background-color: #f5f5f5;
-            border: 1px solid #e0e0e0;
+            background: linear-gradient(145deg, #6a11cb, #2575fc); /* Button gradient */
+            border: none; /* Remove default border */
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            color: #555;
-            transition: background-color 0.2s;
+            font-size: 20px; /* Larger icon */
+            color: white; /* White icon */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Button shadow */
+            transition: transform 0.2s, box-shadow 0.2s; /* Hover effect */
         }
 
         #unity-fullscreen-button:hover {
-            background-color: #ebebeb;
+            transform: scale(1.05); /* Slight scale on hover */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        #unity-fullscreen-button:active {
+             transform: scale(0.98); /* Press down effect */
         }
 
         #unity-fullscreen-button::before {
             content: "⛶";
         }
 
+         .instructions {
+             width: 100%;
+             background-color: rgba(0, 0, 0, 0.3);
+             padding: 15px;
+             border-radius: 8px;
+             font-size: 0.95rem;
+             line-height: 1.5;
+             color: #ddd;
+         }
+
+         .instructions h3 {
+              margin-bottom: 8px;
+              color: #4fc3f7;
+         }
+
+         .instructions ul {
+              padding-left: 20px;
+         }
+
+         .instructions li {
+              margin-bottom: 5px;
+         }
+
         #unity-warning {
             width: 100%;
             display: none;
-            padding: 8px 12px;
-            border-left: 4px solid #ffeb3b;
-            background-color: #fff8e1;
-            color: #5d4037;
-            font-size: 0.9rem;
+            padding: 12px 16px;
+            border-left: 5px solid #ff9800; /* Warning color */
+            background-color: rgba(255, 152, 0, 0.15); /* Warning bg */
+            color: #ffcc80; /* Warning text */
+            font-size: 0.95rem;
+            border-radius: 0 4px 4px 0; /* Match bar style */
         }
 
         #unity-warning.error {
             border-left-color: #f44336;
-            background-color: #ffebee;
-            color: #c62828;
+            background-color: rgba(244, 67, 54, 0.15);
+            color: #ffcdd2;
         }
 
         .author-link {
-            margin-top: 16px;
-            padding: 10px 20px;
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 20px;
+            margin-top: 10px; /* Reduced margin */
+            padding: 12px 24px;
+            background: linear-gradient(145deg, #2ecc71, #1abc9c); /* Different gradient */
+            border: none; /* No border */
+            border-radius: 30px; /* Pill shape */
             text-decoration: none;
-            color: #333;
-            font-size: 0.9rem;
+            color: white; /* White text */
+            font-weight: 500;
+            font-size: 1rem;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: background-color 0.2s;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s; /* Hover effect */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
         .author-link:hover {
-            background-color: #e9ecef;
+            transform: translateY(-2px); /* Lift slightly */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(145deg, #27ae60, #16a085); /* Darker on hover */
         }
 
-        /* Стили для кастомного скроллбара */
+        .author-link:active {
+             transform: translateY(0); /* Press down */
+        }
+
+        /* Scrollbar styles remain the same */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
+            background: linear-gradient(to bottom, #6a11cb, #2575fc);
+            border-radius: 5px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+            background: linear-gradient(to bottom, #2575fc, #6a11cb);
         }
 
         html {
             scrollbar-width: thin;
-            scrollbar-color: #c1c1c1 #f1f1f1;
+            scrollbar-color: #2575fc rgba(255, 255, 255, 0.1);
         }
 
         @media (max-width: 768px) {
             body {
-                padding: 12px;
+                padding: 10px;
             }
-
             h1 {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
             }
-
-            .controls-container {
-                padding: 8px 0;
-            }
-
+            .subtitle { font-size: 0.95rem; }
             #unity-fullscreen-button {
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            .author-link {
+                 font-size: 0.9rem;
+                 padding: 10px 20px;
             }
         }
 
         @media (max-width: 480px) {
             h1 {
-                font-size: 1.3rem;
+                font-size: 1.5rem;
             }
-
+            .subtitle { font-size: 0.85rem; }
             #unity-loading-bar {
-                width: 80%;
+                width: 90%;
             }
-
             .author-link {
-                font-size: 0.85rem;
-                padding: 8px 16px;
+                 font-size: 0.8rem;
+                 padding: 8px 16px;
             }
         }
     </style>
@@ -213,8 +279,18 @@
 <body>
     <div class="container">
         <header>
-            <h1>Vector2Lesson</h1>
+            <h1>Vector2Leson</h1>
+            <p class="subtitle">Созданно для визуального понимания векторов</p>
         </header>
+
+        <!-- Added instructions section -->
+        <div class="instructions">
+             <h3>Как играть:</h3>
+             <ul>
+                  <li><strong>Перемещай круг:</strong> Для начала напиши нужные тебе вектора и нажми пробел или в любое место</li>
+                  <li><strong>Визуализация векторов:</strong> Векторы визуализируются красной линией и перемещением шара</li>
+             </ul>
+        </div>
 
         <div id="unity-container" class="unity-desktop">
             <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
@@ -226,18 +302,19 @@
         </div>
 
         <div class="controls-container">
-            <div id="unity-build-title" style="font-size: 0.9rem; color: #666;">Vector2Lesson</div>
+            <div id="unity-build-title" style="font-size: 1rem; color: #bbb;">Vector2Lesson pre-alpha 0.1</div> <!-- Updated title -->
             <button id="unity-fullscreen-button" aria-label="Toggle Fullscreen"></button>
         </div>
 
         <div id="unity-warning"></div>
 
-        <a href="https://tryander.space/" target="_blank" class="author-link">
+        <a href="https://tryander.space/" target="_blank" class="author-link"> <!-- Fixed link -->
             Made by TryAnder
         </a>
     </div>
 
     <script>
+        // ... (JavaScript remains the same) ...
         const container = document.querySelector("#unity-container");
         const canvas = document.querySelector("#unity-canvas");
         const loadingBar = document.querySelector("#unity-loading-bar");
