@@ -20,10 +20,11 @@
             flex-direction: column;
             align-items: center;
             color: #333;
+            overflow-y: auto; /* Позволяет скроллиться если контент больше высоты экрана */
         }
 
         .container {
-            max-width: 960px; /* Основная ширина */
+            max-width: 960px;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -39,36 +40,33 @@
 
         h1 {
             font-weight: 400;
-            font-size: 1.8rem; /* Адаптивный размер */
+            font-size: 1.8rem;
             letter-spacing: -0.02em;
         }
 
-        /* Основной контейнер для Unity Canvas */
         #unity-container {
             width: 100%;
             position: relative;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            background-color: #000; /* Фон во время загрузки */
-            aspect-ratio: 960 / 600; /* Сохраняем пропорции 1.6 */
+            background-color: #000;
+            aspect-ratio: 960 / 600;
         }
 
-        /* Canvas внутри */
         #unity-canvas {
             width: 100%;
             height: 100%;
             display: block;
         }
 
-        /* Индикатор загрузки */
         #unity-loading-bar {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 60%;
-            max-width: 300px; /* Максимальная ширина для мобильных */
+            max-width: 300px;
         }
 
         #unity-progress-bar-empty {
@@ -82,11 +80,10 @@
         #unity-progress-bar-full {
             height: 100%;
             width: 0%;
-            background-color: #ffffff; /* Белый прогресс */
+            background-color: #ffffff;
             transition: width 0.2s ease;
         }
 
-        /* Контейнер для контролов под canvas */
         .controls-container {
             display: flex;
             justify-content: space-between;
@@ -95,7 +92,6 @@
             padding: 10px 0;
         }
 
-        /* Кнопка полноэкранного режима */
         #unity-fullscreen-button {
             width: 40px;
             height: 40px;
@@ -115,29 +111,26 @@
             background-color: #ebebeb;
         }
 
-        /* Стиль для символа кнопки */
         #unity-fullscreen-button::before {
-            content: "⛶"; /* Unicode символ для полноэкранного режима */
+            content: "⛶";
         }
 
-        /* Баннер предупреждений/ошибок */
         #unity-warning {
             width: 100%;
-            display: none; /* Скрыт по умолчанию */
+            display: none;
             padding: 8px 12px;
-            border-left: 4px solid #ffeb3b; /* Жёлтая граница для предупреждения */
+            border-left: 4px solid #ffeb3b;
             background-color: #fff8e1;
             color: #5d4037;
             font-size: 0.9rem;
         }
 
         #unity-warning.error {
-            border-left-color: #f44336; /* Красная граница для ошибки */
+            border-left-color: #f44336;
             background-color: #ffebee;
             color: #c62828;
         }
 
-        /* Ссылка на автора */
         .author-link {
             margin-top: 16px;
             padding: 10px 20px;
@@ -157,7 +150,30 @@
             background-color: #e9ecef;
         }
 
-        /* --- Адаптивность --- */
+        /* Стили для кастомного скроллбара */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: #c1c1c1 #f1f1f1;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 12px;
@@ -176,9 +192,6 @@
                 height: 36px;
                 font-size: 16px;
             }
-
-            /* На мобильных можно уменьшить разрешение canvas для производительности */
-            /* Это нужно раскомментировать в JS config.devicePixelRatio = 1; */
         }
 
         @media (max-width: 480px) {
@@ -203,28 +216,22 @@
             <h1>Vector2Lesson</h1>
         </header>
 
-        <!-- Unity Canvas Container -->
         <div id="unity-container" class="unity-desktop">
             <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
             <div id="unity-loading-bar">
-                <!-- Логотип Unity (опционально, можно удалить или заменить на своё изображение) -->
-                <!-- <div id="unity-logo"></div> -->
                 <div id="unity-progress-bar-empty">
                     <div id="unity-progress-bar-full"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Контролы под canvas -->
         <div class="controls-container">
             <div id="unity-build-title" style="font-size: 0.9rem; color: #666;">Vector2Lesson</div>
             <button id="unity-fullscreen-button" aria-label="Toggle Fullscreen"></button>
         </div>
 
-        <!-- Баннер для ошибок/предупреждений -->
         <div id="unity-warning"></div>
 
-        <!-- Ссылка на автора -->
         <a href="https://tryander.space/" target="_blank" class="author-link">
             Made by TryAnder
         </a>
@@ -238,22 +245,22 @@
         const fullscreenButton = document.querySelector("#unity-fullscreen-button");
         const warningBanner = document.querySelector("#unity-warning");
 
+        let unityInstance = null;
+
         function unityShowBanner(msg, type) {
             warningBanner.innerHTML = msg;
             warningBanner.style.display = 'block';
             
-            // Установка класса для ошибки
             if (type === 'error') {
                 warningBanner.classList.add('error');
             } else {
                 warningBanner.classList.remove('error');
             }
 
-            // Автоматическое скрытие для не-ошибок
             if (type !== 'error') {
                 setTimeout(() => {
                     warningBanner.style.display = 'none';
-                }, 5000); // 5 секунд
+                }, 5000);
             }
         }
 
@@ -270,17 +277,12 @@
             showBanner: unityShowBanner,
         };
 
-        // Дополнительная логика для мобильных устройств (опционально)
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            // Убираем фокус на canvas при клике для лучшей совместимости
             canvas.addEventListener("touchstart", function(e) {
                 if (e.touches.length > 1) {
-                    e.preventDefault(); // Предотвращаем масштабирование двумя пальцами
+                    e.preventDefault();
                 }
             }, { passive: false });
-
-            // Для повышения производительности на слабых устройствах
-            // config.devicePixelRatio = 1; // Раскомментируй, если хочешь принудительно уменьшить разрешение рендера
         }
 
         loadingBar.style.display = "block";
@@ -290,13 +292,17 @@
         script.onload = () => {
             createUnityInstance(canvas, config, (progress) => {
                 progressBarFull.style.width = 100 * progress + "%";
-            }).then((unityInstance) => {
+            }).then((uInstance) => {
+                unityInstance = uInstance;
                 loadingBar.style.display = "none";
+                
                 fullscreenButton.onclick = () => {
-                    unityInstance.SetFullscreen(1);
+                    if (unityInstance) {
+                        unityInstance.SetFullscreen(1);
+                    }
                 };
             }).catch((message) => {
-                unityShowBanner(message, 'error'); // Показываем ошибку загрузки
+                unityShowBanner(message, 'error');
             });
         };
 
